@@ -98,17 +98,17 @@ jobs:
               if (fs.existsSync(reportPath)) {
                 const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
                 
-                // Check if orphans were found
-                if (report.orphans && report.orphans.length > 0) {
+                // Check if findings were found
+                if (report.findings && report.findings.length > 0) {
                   let comment = '## Cost Janitor Report\n\n';
                   
                   if (fs.existsSync(summaryPath)) {
                     const summary = fs.readFileSync(summaryPath, 'utf8');
                     comment += summary;
                   } else {
-                    comment += `Found ${report.orphans.length} orphaned resource(s):\n\n`;
-                    report.orphans.forEach(orphan => {
-                      comment += `- **${orphan.type}**: ${orphan.id}\n`;
+                    comment += `Found ${report.findings.length} cost finding(s):\n\n`;
+                    report.findings.forEach(finding => {
+                      comment += `- **${finding.resource_type}**: ${finding.resource_id} (${finding.reason})\n`;
                     });
                   }
                   
