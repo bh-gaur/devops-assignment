@@ -26,3 +26,4 @@ terraform apply -auto-approve
 * **Redundant Non-Current S3 Lifecycle Strategy:** Purging backdated elements after 30 days is a great security mechanism, but standard configurations should transition them into cheaper Glacier storage classes before final termination to protect data retention pipelines.
 * **Isolated Orphan EBS Storage Target Allocation:** Provisioning decoupled network blocks consumes budget overhead without functional utility; unused structures must be monitored and eliminated via continuous platform policies like a cost janitor.
 * **Hardcoded Non-Resilient Volume Target Location Mapping:** Locking the isolated storage footprint strictly inside the default AZ (`us-east-1a`) breaks resilience strategies; cross-regional reference flags must explicitly fetch regional indices directly from dynamic subnets inside the topology module.
+
