@@ -1,6 +1,8 @@
 name: Cost Janitor
 
 on:
+  push:
+    branches: [ main ]
   pull_request:
     branches: [ main ]
   workflow_dispatch: # Allows manual triggering of the workflow
@@ -20,6 +22,7 @@ jobs:
           DATA_DIR: /tmp/localstack/data
           LAMBDA_EXECUTOR: docker
           DOCKER_HOST: unix:///var/run/docker.sock
+          LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
         options: >-
           --health-cmd="awslocal kinesis list-streams"
           --health-interval=10s
