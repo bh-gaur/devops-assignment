@@ -1,0 +1,122 @@
+name: Cost Janitor
+
+on:
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch: # Allows manual triggering of the workflow
+
+jobs:
+  cost-janitor:
+    runs-on: ubuntu-latest
+    services:
+      localstack:
+        image: localstack/localstack:latest
+        ports:
+          - 4566:4566
+          - 4571:4571
+        env:
+          SERVICES: s3,ec2
+          DEBUG: 1
+          DATA_DIR: /tmp/localstack/data
+          LAMBDA_EXECUTOR: docker
+          DOCKER_HOST: unix:///var/run/docker.sock
+        options: >-
+          --health-cmd="awslocal kinesis list-streams"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+          -v /var/run/docker.sock:/var/run/docker.sock
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.11.0
+
+      - name: Configure AWS credentials for LocalStack
+        run: |
+          aws configure set aws_access_key_id test
+          aws configure set aws_secret_access_key test
+          aws configure set region us-east-1
+
+      - name: Run terraform code
+        env:
+          AWS_ENDPOINT_URL_S3: http://localhost:4566
+          AWS_ENDPOINT_URL_EC2: http://localhost:4566
+          AWS_ACCESS_KEY_ID: test
+          AWS_SECRET_ACCESS_KEY: test
+          AWS_DEFAULT_REGION: us-east-1
+        run: |
+          cd terraform
+          terraform init
+          terraform plan
+          terraform apply -auto-approve
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Run janitor script
+        env:
+          AWS_ENDPOINT_URL_S3: http://localhost:4566
+          AWS_ENDPOINT_URL_EC2: http://localhost:4566
+          AWS_ACCESS_KEY_ID: test
+          AWS_SECRET_ACCESS_KEY: test
+          AWS_DEFAULT_REGION: us-east-1
+        run: |
+          cd janitor
+          python3 janitor.py --dry-run
+
+      - name: Upload report artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: janitor-reports
+          path: |
+            janitor/report.json
+            janitor/summary.md
+          retention-days: 30
+
+      - name: Post PR comment with summary
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            const summaryPath = path.join(process.env.GITHUB_WORKSPACE, 'janitor', 'summary.md');
+            const reportPath = path.join(process.env.GITHUB_WORKSPACE, 'janitor', 'report.json');
+            
+            try {
+              if (fs.existsSync(reportPath)) {
+                const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+                
+                // Check if orphans were found
+                if (report.orphans && report.orphans.length > 0) {
+                  let comment = '## Cost Janitor Report\n\n';
+                  
+                  if (fs.existsSync(summaryPath)) {
+                    const summary = fs.readFileSync(summaryPath, 'utf8');
+                    comment += summary;
+                  } else {
+                    comment += `Found ${report.orphans.length} orphaned resource(s):\n\n`;
+                    report.orphans.forEach(orphan => {
+                      comment += `- **${orphan.type}**: ${orphan.id}\n`;
+                    });
+                  }
+                  
+                  github.rest.issues.createComment({
+                    issue_number: context.issue.number,
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    body: comment
+                  });
+                }
+              }
+            } catch (error) {
+              console.log('Error posting comment:', error.message);
+            }

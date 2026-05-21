@@ -1,0 +1,86 @@
+{
+  "scan_timestamp": "2026-05-21T13:53:10Z",
+  "account_id": "783764605244",
+  "region": "us-east-1",
+  "summary": {
+    "total_orphans": 5,
+    "estimated_monthly_waste_usd": 20.0
+  },
+  "findings": [
+    {
+      "resource_id": "vol-07ae8299945a6add3",
+      "resource_type": "ebs_volume",
+      "reason": "unattached",
+      "age_days": 6,
+      "estimated_monthly_cost_usd": 8.0,
+      "tags": {
+        "Project": null,
+        "Environment": null,
+        "Owner": null
+      },
+      "suggested_action": "delete",
+      "safe_to_auto_delete": true,
+      "action_taken": null
+    },
+    {
+      "resource_id": "i-09cb083f542dae61d",
+      "resource_type": "ec2_instance",
+      "reason": "stopped_gt_14_days",
+      "age_days": 53,
+      "estimated_monthly_cost_usd": 12.0,
+      "tags": {
+        "Project": null,
+        "Environment": null,
+        "Owner": null
+      },
+      "suggested_action": "terminate",
+      "safe_to_auto_delete": true,
+      "action_taken": null
+    },
+    {
+      "resource_id": "vol-049d495ca9ab3cdb4",
+      "resource_type": "ebs_volume",
+      "reason": "missing_required_tags",
+      "age_days": 63,
+      "estimated_monthly_cost_usd": 0.0,
+      "tags": {
+        "Project": null,
+        "Environment": null,
+        "Owner": null
+      },
+      "suggested_action": "tag_resource",
+      "safe_to_auto_delete": false,
+      "action_taken": null
+    },
+    {
+      "resource_id": "vol-07ae8299945a6add3",
+      "resource_type": "ebs_volume",
+      "reason": "missing_required_tags",
+      "age_days": 6,
+      "estimated_monthly_cost_usd": 0.0,
+      "tags": {
+        "Project": null,
+        "Environment": null,
+        "Owner": null
+      },
+      "suggested_action": "tag_resource",
+      "safe_to_auto_delete": false,
+      "action_taken": null
+    },
+    {
+      "resource_id": "i-09cb083f542dae61d",
+      "resource_type": "ec2_instance",
+      "reason": "missing_required_tags",
+      "age_days": 53,
+      "estimated_monthly_cost_usd": 0.0,
+      "tags": {
+        "Project": null,
+        "Environment": null,
+        "Owner": null
+      },
+      "suggested_action": "tag_resource",
+      "safe_to_auto_delete": false,
+      "action_taken": null
+    }
+  ]
+}
