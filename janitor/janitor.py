@@ -9,18 +9,11 @@ from datetime import datetime, timezone, timedelta
 import boto3
 from botocore.config import Config
 
+import constants
+
 
 REQUIRED_TAGS = {"Project", "Environment", "Owner"}
 DEFAULT_STOPPED_DAYS = 14
-
-
-# =========================================================
-# Cost Heuristics (example values)
-# =========================================================
-
-EBS_GP2_MONTHLY_COST = 8.00
-EIP_MONTHLY_COST = 3.60
-STOPPED_INSTANCE_MONTHLY_COST = 12.00
 
 
 # =========================================================
@@ -111,6 +104,12 @@ def calculate_age_days(dt):
     return (now_utc() - dt).days
 
 
+def estimate_ebs_monthly_cost(volume):
+    """Estimate monthly EBS cost using gp3 per-GB pricing."""
+    size_gb = volume.get("Size", 0)
+    return round(size_gb * constants.EBS_GP3_GB_MONTHLY_COST, 2)
+
+
 def get_account_id(sts_client):
     return sts_client.get_caller_identity()["Account"]
 
@@ -141,7 +140,7 @@ def detect_unattached_volumes(ec2, delete_mode):
             resource_type="ebs_volume",
             reason="unattached",
             age_days=calculate_age_days(create_time),
-            estimated_monthly_cost_usd=EBS_GP2_MONTHLY_COST,
+            estimated_monthly_cost_usd=estimate_ebs_monthly_cost(volume),
             tags=required_tag_projection(tags),
             suggested_action="delete",
             safe_to_auto_delete=not is_protected(tags)
@@ -188,7 +187,7 @@ def detect_old_stopped_instances(ec2, stopped_days, delete_mode):
                 resource_type="ec2_instance",
                 reason=f"stopped_gt_{stopped_days}_days",
                 age_days=calculate_age_days(launch_time),
-                estimated_monthly_cost_usd=STOPPED_INSTANCE_MONTHLY_COST,
+                estimated_monthly_cost_usd=constants.STOPPED_INSTANCE_MONTHLY_COST,
                 tags=required_tag_projection(tags),
                 suggested_action="terminate",
                 safe_to_auto_delete=not is_protected(tags)
@@ -232,7 +231,7 @@ def detect_unassociated_eips(ec2, delete_mode):
             resource_type="elastic_ip",
             reason="unassociated",
             age_days=age_days,
-            estimated_monthly_cost_usd=EIP_MONTHLY_COST,
+            estimated_monthly_cost_usd=constants.EIP_MONTHLY_COST,
             tags=required_tag_projection(tags),
             suggested_action="release",
             safe_to_auto_delete=not is_protected(tags)
