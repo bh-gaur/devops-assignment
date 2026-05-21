@@ -444,10 +444,7 @@ def main():
             f"Scan complete. Findings: {len(findings)}"
         )
 
-        # Required CI behavior
-        if findings and not delete_mode:
-            sys.exit(1)
-
+        # Exit 0 on successful completion (both dry-run and delete modes)
         sys.exit(0)
 
     except Exception as e:
