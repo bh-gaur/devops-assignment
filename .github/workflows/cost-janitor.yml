@@ -17,7 +17,7 @@ jobs:
           - 4566:4566
           - 4571:4571
         env:
-          SERVICES: s3,ec2
+          SERVICES: s3,ec2,sts
           DEBUG: 1
           DATA_DIR: /tmp/localstack/data
           LAMBDA_EXECUTOR: docker
@@ -72,7 +72,7 @@ jobs:
         run: |
           cd janitor
           pip install -r requirements.txt
-          python3 janitor.py --dry-run
+          python3 janitor.py --dry-run --endpoint-url http://localhost:4566
 
       - name: Upload report artifacts
         if: always()
