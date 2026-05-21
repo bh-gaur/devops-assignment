@@ -71,6 +71,7 @@ jobs:
           AWS_DEFAULT_REGION: us-east-1
         run: |
           cd janitor
+          pip install -r requirements.txt
           python3 janitor.py --dry-run
 
       - name: Upload report artifacts
