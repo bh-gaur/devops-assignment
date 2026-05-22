@@ -1,82 +1,52 @@
 {
-  "scan_timestamp": "2026-05-21T14:29:45Z",
-  "account_id": "783764605244",
+  "scan_timestamp": "2026-05-22T16:45:01Z",
+  "account_id": "000000000000",
   "region": "us-east-1",
   "summary": {
-    "total_orphans": 5,
-    "estimated_monthly_waste_usd": 20.0
+    "total_orphans": 3,
+    "estimated_monthly_waste_usd": 0.64
   },
   "findings": [
     {
-      "resource_id": "vol-07ae8299945a6add3",
+      "resource_id": "vol-16e08f516baa5c556",
       "resource_type": "ebs_volume",
       "reason": "unattached",
-      "age_days": 6,
-      "estimated_monthly_cost_usd": 8.0,
+      "age_days": 0,
+      "estimated_monthly_cost_usd": 0.64,
       "tags": {
-        "Owner": null,
-        "Project": null,
-        "Environment": null
+        "Project": "devops-assignment",
+        "Environment": "staging",
+        "Owner": "Bhupender"
       },
       "suggested_action": "delete",
       "safe_to_auto_delete": true,
       "action_taken": null
     },
     {
-      "resource_id": "i-09cb083f542dae61d",
-      "resource_type": "ec2_instance",
-      "reason": "stopped_gt_14_days",
-      "age_days": 53,
-      "estimated_monthly_cost_usd": 12.0,
-      "tags": {
-        "Owner": null,
-        "Project": null,
-        "Environment": null
-      },
-      "suggested_action": "terminate",
-      "safe_to_auto_delete": true,
-      "action_taken": null
-    },
-    {
-      "resource_id": "vol-049d495ca9ab3cdb4",
+      "resource_id": "vol-25a284809f7816545",
       "resource_type": "ebs_volume",
       "reason": "missing_required_tags",
-      "age_days": 63,
+      "age_days": 0,
       "estimated_monthly_cost_usd": 0.0,
       "tags": {
-        "Owner": null,
         "Project": null,
-        "Environment": null
+        "Environment": null,
+        "Owner": null
       },
       "suggested_action": "tag_resource",
       "safe_to_auto_delete": false,
       "action_taken": null
     },
     {
-      "resource_id": "vol-07ae8299945a6add3",
+      "resource_id": "vol-0ca0b5b300196a239",
       "resource_type": "ebs_volume",
       "reason": "missing_required_tags",
-      "age_days": 6,
+      "age_days": 0,
       "estimated_monthly_cost_usd": 0.0,
       "tags": {
-        "Owner": null,
         "Project": null,
-        "Environment": null
-      },
-      "suggested_action": "tag_resource",
-      "safe_to_auto_delete": false,
-      "action_taken": null
-    },
-    {
-      "resource_id": "i-09cb083f542dae61d",
-      "resource_type": "ec2_instance",
-      "reason": "missing_required_tags",
-      "age_days": 53,
-      "estimated_monthly_cost_usd": 0.0,
-      "tags": {
-        "Owner": null,
-        "Project": null,
-        "Environment": null
+        "Environment": null,
+        "Owner": null
       },
       "suggested_action": "tag_resource",
       "safe_to_auto_delete": false,

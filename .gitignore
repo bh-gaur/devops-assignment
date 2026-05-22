@@ -1,0 +1,6 @@
+############################
+# Terraform Working Directory
+############################
+.terraform/
+.terraform.lock.hcl
+

@@ -10,7 +10,7 @@ This folder conatins the resuable terraform code and modules for provisioning th
     git clone git@github.com:bh-gaur/devops-assignment.git
 
     # 2. Move to terraform folder
-    cd terraform
+    cd devops-assignment/terraform
 
     # Set fake credentials (LocalStack doesn't validate them)
     export AWS_ACCESS_KEY_ID=test
