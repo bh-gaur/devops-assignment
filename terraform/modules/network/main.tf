@@ -1,5 +1,8 @@
 resource "aws_vpc" "aws_vpc" {
   cidr_block = var.vpc_cidr
+  enable_dns_support   = true
+  enable_dns_hostnames = true
+
   tags       = var.tags
 }
 
@@ -35,6 +38,7 @@ resource "aws_security_group" "aws-sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+   # Override with a specific CIDR in production.
   ingress {
     from_port   = 22
     to_port     = 22

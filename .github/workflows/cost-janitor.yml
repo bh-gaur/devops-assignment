@@ -1,11 +1,13 @@
 name: Cost Janitor
 
 on:
-  push:
-    branches: [ main ]
   pull_request:
     branches: [ main ]
   workflow_dispatch: # Allows manual triggering of the workflow
+
+permissions:
+  pull-requests: write
+  contents: read
 
 jobs:
   cost-janitor:
@@ -40,16 +42,16 @@ jobs:
 
       - name: Configure AWS credentials for LocalStack
         run: |
-          aws configure set aws_access_key_id test
-          aws configure set aws_secret_access_key test
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws configure set region us-east-1
 
       - name: Run terraform code
         env:
           AWS_ENDPOINT_URL_S3: http://localhost:4566
           AWS_ENDPOINT_URL_EC2: http://localhost:4566
-          AWS_ACCESS_KEY_ID: test
-          AWS_SECRET_ACCESS_KEY: test
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: us-east-1
         run: |
           cd terraform
@@ -66,8 +68,8 @@ jobs:
         env:
           AWS_ENDPOINT_URL_S3: http://localhost:4566
           AWS_ENDPOINT_URL_EC2: http://localhost:4566
-          AWS_ACCESS_KEY_ID: test
-          AWS_SECRET_ACCESS_KEY: test
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: us-east-1
         run: |
           cd janitor
@@ -95,31 +97,43 @@ jobs:
             const reportPath = path.join(process.env.GITHUB_WORKSPACE, 'janitor', 'report.json');
             
             try {
+              console.log('Workspace:', process.env.GITHUB_WORKSPACE);
               if (fs.existsSync(reportPath)) {
+                console.log('Report found at:', reportPath);
                 const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+                console.log('Report parsed. Findings count:', report.findings ? report.findings.length : 0);
                 
-                // Check if orphans were found
-                if (report.orphans && report.orphans.length > 0) {
+                // Check if findings were found
+                if (report.findings && report.findings.length > 0) {
+                  console.log('Posting comment with findings...');
                   let comment = '## Cost Janitor Report\n\n';
                   
                   if (fs.existsSync(summaryPath)) {
+                    console.log('Summary found, appending...');
                     const summary = fs.readFileSync(summaryPath, 'utf8');
                     comment += summary;
                   } else {
-                    comment += `Found ${report.orphans.length} orphaned resource(s):\n\n`;
-                    report.orphans.forEach(orphan => {
-                      comment += `- **${orphan.type}**: ${orphan.id}\n`;
+                    console.log('Summary not found, building from findings...');
+                    comment += `Found ${report.findings.length} cost finding(s):\n\n`;
+                    report.findings.forEach(finding => {
+                      comment += `- **${finding.resource_type}**: ${finding.resource_id} (${finding.reason})\n`;
                     });
                   }
                   
-                  github.rest.issues.createComment({
+                  await github.rest.issues.createComment({
                     issue_number: context.issue.number,
                     owner: context.repo.owner,
                     repo: context.repo.repo,
                     body: comment
                   });
+                  console.log('Comment posted successfully');
+                } else {
+                  console.log('No findings found in report');
                 }
+              } else {
+                console.log('Report file not found at:', reportPath);
               }
             } catch (error) {
               console.log('Error posting comment:', error.message);
+              console.log('Error stack:', error.stack);
             }
