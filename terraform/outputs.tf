@@ -3,7 +3,7 @@ output "vpc_id" {
 }
 
 output "subnet_ids" {
-  value = module.aws_vpc.subnet_ids
+  value = module.aws_subnet.aws_public_subnet_a.ids
 }
 
 output "bucket_name" {
