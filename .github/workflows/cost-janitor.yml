@@ -42,16 +42,16 @@ jobs:
 
       - name: Configure AWS credentials for LocalStack
         run: |
-          aws configure set aws_access_key_id test
-          aws configure set aws_secret_access_key test
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws configure set region us-east-1
 
       - name: Run terraform code
         env:
           AWS_ENDPOINT_URL_S3: http://localhost:4566
           AWS_ENDPOINT_URL_EC2: http://localhost:4566
-          AWS_ACCESS_KEY_ID: test
-          AWS_SECRET_ACCESS_KEY: test
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: us-east-1
         run: |
           cd terraform
@@ -68,8 +68,8 @@ jobs:
         env:
           AWS_ENDPOINT_URL_S3: http://localhost:4566
           AWS_ENDPOINT_URL_EC2: http://localhost:4566
-          AWS_ACCESS_KEY_ID: test
-          AWS_SECRET_ACCESS_KEY: test
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: us-east-1
         run: |
           cd janitor
