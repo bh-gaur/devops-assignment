@@ -36,6 +36,8 @@ This folder conatins the resuable terraform code and modules for provisioning th
     # 8. Run janitor.py
     python3 janitor.py --dry-run --endpoint-url http://localhost:4566
 ```
+## Architecture
+![alt text](assignment.svg)
 
 ## Trade-offs
 Try to add more resources check in janitor.py for resource and cost optimzation.
