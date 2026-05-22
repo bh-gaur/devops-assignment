@@ -1,9 +1,9 @@
 output "vpc_id" {
-  value = module.network.aws_vpc.id
+  value = module.network.vpc_id
 }
 
 output "subnet_ids" {
-  value = module.network.aws_subnet.aws_public_subnet_a.ids
+  value = module.network.public_subnet_ids
 }
 
 output "bucket_name" {
