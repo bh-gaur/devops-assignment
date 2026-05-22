@@ -64,7 +64,6 @@ def parse_args():
 
     return parser.parse_args()
 
-
 def make_ec2_client(region, endpoint_url):
     return boto3.client(
         "ec2",
@@ -73,17 +72,12 @@ def make_ec2_client(region, endpoint_url):
         config=Config(retries={"max_attempts": 3})
     )
 
-
 def tags_to_dict(tags):
     if not tags:
         return {}
     return {t["Key"]: t["Value"] for t in tags}
 
-
 def required_tag_projection(tags):
-    """
-    Required schema expects missing tags to exist with null values.
-    """
     projected = {}
 
     for tag in REQUIRED_TAGS:
@@ -91,33 +85,26 @@ def required_tag_projection(tags):
 
     return projected
 
-
 def is_protected(tags):
     return tags.get("Protected", "").lower() == "true"
-
 
 def now_utc():
     return datetime.now(timezone.utc)
 
-
 def calculate_age_days(dt):
     return (now_utc() - dt).days
-
 
 def estimate_ebs_monthly_cost(volume):
     """Estimate monthly EBS cost using gp3 per-GB pricing."""
     size_gb = volume.get("Size", 0)
     return round(size_gb * constants.EBS_GP3_GB_MONTHLY_COST, 2)
 
-
 def get_account_id(sts_client):
     return sts_client.get_caller_identity()["Account"]
-
 
 # =========================================================
 # Detection Functions
 # =========================================================
-
 def detect_unattached_volumes(ec2, delete_mode):
     findings = []
 
@@ -156,7 +143,6 @@ def detect_unattached_volumes(ec2, delete_mode):
         findings.append(finding)
 
     return findings
-
 
 def detect_old_stopped_instances(ec2, stopped_days, delete_mode):
     findings = []
@@ -205,7 +191,6 @@ def detect_old_stopped_instances(ec2, stopped_days, delete_mode):
             findings.append(finding)
 
     return findings
-
 
 def detect_unassociated_eips(ec2, delete_mode):
     findings = []
@@ -257,7 +242,6 @@ def detect_unassociated_eips(ec2, delete_mode):
         findings.append(finding)
 
     return findings
-
 
 def detect_missing_tags(ec2):
     findings = []
@@ -317,7 +301,6 @@ def detect_missing_tags(ec2):
                 )
 
     return findings
-
 
 # =========================================================
 # Reporting
@@ -381,7 +364,6 @@ def write_markdown_summary(findings):
 # =========================================================
 # Main
 # =========================================================
-
 def main():
 
     args = parse_args()
@@ -443,13 +425,15 @@ def main():
             f"Scan complete. Findings: {len(findings)}"
         )
 
+        if findings and not delete_mode:
+            sys.exit(1)
+            
         # Exit 0 on successful completion (both dry-run and delete modes)
         sys.exit(0)
 
     except Exception as e:
         print(f"Execution failed: {e}")
         sys.exit(2)
-
 
 if __name__ == "__main__":
     main()
