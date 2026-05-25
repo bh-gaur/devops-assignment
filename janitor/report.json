@@ -1,0 +1,56 @@
+{
+  "scan_timestamp": "2026-05-23T05:09:10Z",
+  "account_id": "000000000000",
+  "region": "us-east-1",
+  "summary": {
+    "total_orphans": 3,
+    "estimated_monthly_waste_usd": 0.64
+  },
+  "findings": [
+    {
+      "resource_id": "vol-e67292be1bbb88abc",
+      "resource_type": "ebs_volume",
+      "reason": "unattached",
+      "age_days": 0,
+      "estimated_monthly_cost_usd": 0.64,
+      "tags": {
+        "Project": "devops-assignment",
+        "Owner": "Bhupender",
+        "Environment": "staging"
+      },
+      "suggested_action": "delete",
+      "safe_to_auto_delete": true,
+      "action_taken": null
+    },
+    {
+      "resource_id": "vol-4bda38b0f939d7b58",
+      "resource_type": "ebs_volume",
+      "reason": "missing_required_tags",
+      "age_days": 0,
+      "estimated_monthly_cost_usd": 0.0,
+      "tags": {
+        "Project": null,
+        "Owner": null,
+        "Environment": null
+      },
+      "suggested_action": "tag_resource",
+      "safe_to_auto_delete": false,
+      "action_taken": null
+    },
+    {
+      "resource_id": "vol-b0ca76b618aec4e2b",
+      "resource_type": "ebs_volume",
+      "reason": "missing_required_tags",
+      "age_days": 0,
+      "estimated_monthly_cost_usd": 0.0,
+      "tags": {
+        "Project": null,
+        "Owner": null,
+        "Environment": null
+      },
+      "suggested_action": "tag_resource",
+      "safe_to_auto_delete": false,
+      "action_taken": null
+    }
+  ]
+}
